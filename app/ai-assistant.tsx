@@ -188,17 +188,6 @@ export default function AIAssistantScreen() {
           isRtl && !isUser && styles.aiMessageContainerRtl,
         ]}
       >
-        {!isUser && (
-          <View
-            style={[
-              styles.avatarContainer,
-              { backgroundColor: colors.primary },
-            ]}
-          >
-            <ThemedText style={styles.avatarText}>E20</ThemedText>
-          </View>
-        )}
-
         <View
           style={[
             styles.messageBubble,
@@ -230,17 +219,6 @@ export default function AIAssistantScreen() {
             {messageContent}
           </ThemedText>
         </View>
-
-        {isUser && (
-          <View
-            style={[
-              styles.avatarContainer,
-              { backgroundColor: colors.primary },
-            ]}
-          >
-            <Ionicons name="person" size={16} color="#ffffff" />
-          </View>
-        )}
       </View>
     );
   };
@@ -382,7 +360,6 @@ export default function AIAssistantScreen() {
     </ThemedView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -414,92 +391,87 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff5252",
   },
   messagesContainer: {
-    paddingHorizontal: 15,
-    paddingBottom: 10,
-    paddingTop: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   messageContainer: {
-    marginBottom: 15,
     flexDirection: "row",
+    marginVertical: 5,
     alignItems: "flex-end",
-    maxWidth: "85%",
   },
   userMessageContainer: {
     alignSelf: "flex-end",
-    flexDirection: "row",
+    flexDirection: "row-reverse",
+    marginLeft: 40,
   },
   aiMessageContainer: {
     alignSelf: "flex-start",
     flexDirection: "row",
-  },
-  userMessageContainerRtl: {
-    flexDirection: "row-reverse",
-  },
-  aiMessageContainerRtl: {
-    flexDirection: "row-reverse",
+    marginRight: 40,
   },
   avatarContainer: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#888",
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 5,
+    marginHorizontal: 8,
   },
   avatarText: {
     color: "#fff",
-    fontSize: 12,
     fontWeight: "bold",
+    fontSize: 12,
   },
   messageBubble: {
-    borderRadius: 18,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    maxWidth: "90%",
+    borderRadius: 20,
+    maxWidth: "80%",
   },
   userBubble: {
-    borderTopRightRadius: 0,
+    backgroundColor: "#dcf8c6",
+    borderTopRightRadius: 0, // simulate WhatsApp "tail"
   },
   aiBubble: {
-    backgroundColor: "#f1f1f1",
-    borderTopLeftRadius: 0,
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 0, // simulate WhatsApp "tail"
+    borderWidth: 0.5,
+    borderColor: "#ccc",
   },
   messageText: {
     fontSize: 16,
     lineHeight: 22,
   },
   userMessageText: {
-    color: "#fff",
+    color: "#000",
   },
   aiMessageText: {
-    color: "#333",
+    color: "#000",
   },
   typingContainer: {
-    paddingLeft: 15,
-    marginBottom: 10,
-    alignItems: "flex-start",
+    marginVertical: 10,
+    paddingHorizontal: 10,
   },
   typingContainerRtl: {
-    paddingRight: 15,
     alignItems: "flex-end",
   },
   typingBubble: {
     flexDirection: "row",
-    backgroundColor: "#f1f1f1",
+    alignItems: "center",
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 18,
-    alignItems: "center",
+    borderRadius: 20,
+    backgroundColor: "#eee",
+    alignSelf: "flex-start",
   },
   typingText: {
     fontSize: 14,
-    color: "#666",
-    marginLeft: 5,
+    marginLeft: 6,
   },
   inputContainer: {
     borderTopWidth: 1,
-    borderTopColor: "#eee",
-    padding: 15,
+    padding: 10,
   },
   inputWrapper: {
     flexDirection: "row",
@@ -507,31 +479,28 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
     borderRadius: 20,
     paddingHorizontal: 15,
-    paddingVertical: 12,
-    paddingTop: 12,
+    paddingVertical: 10,
     fontSize: 16,
-    marginRight: 10,
     minHeight: 45,
-    maxHeight: 100,
+    maxHeight: 120,
   },
   sendButton: {
     width: 45,
     height: 45,
-    borderRadius: 25,
+    borderRadius: 22,
     justifyContent: "center",
     alignItems: "center",
+    marginLeft: 8,
   },
   disabledSendButton: {
-    backgroundColor: "#ccc",
+    opacity: 0.5,
   },
   disclaimer: {
     fontSize: 12,
-    color: "#999",
-    marginTop: 8,
     textAlign: "center",
+    marginTop: 8,
   },
   rtlText: {
     textAlign: "right",
