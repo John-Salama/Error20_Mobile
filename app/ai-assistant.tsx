@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -19,6 +20,7 @@ import { ThemedView } from "../components/ThemedView";
 import { Colors } from "../constants/Colors";
 import { useAppContext } from "../context/AppContext";
 import { useColorScheme } from "../hooks/useColorScheme";
+import { formatHistoryForAPI, getAIResponse } from "../services/aiService";
 
 // Define message types for the chat
 type MessageType = {
@@ -28,59 +30,20 @@ type MessageType = {
   timestamp: Date;
 };
 
-// Sample AI responses based on different stages
-const aiResponses = {
+// Fallback responses in case the API is unavailable
+// These will be used as a backup or when offline
+const fallbackResponses = {
   greeting: {
     ar: "مرحباً! أنا المساعد الذكي من Error 20. كيف يمكنني مساعدتك اليوم في رحلتك لتخطي أزمة ربع العمر؟",
     en: "Hello! I am the AI assistant from Error 20. How can I help you today in your journey to overcome the quarter-life crisis?",
   },
-  stages: {
-    a: {
-      // التيه (Lost) stage
-      ar: "أفهم أنك تشعر بالضياع في هذه المرحلة. هذا طبيعي تماماً. يمكنني مساعدتك في إيجاد مساحة آمنة والبدء بخطوات صغيرة.",
-      en: "I understand that you feel lost at this stage. This is completely normal. I can help you find a safe space and start with small steps.",
-    },
-    b: {
-      // الإدراك (Awareness) stage
-      ar: "أنت في مرحلة الإدراك، بدأت تلاحظ ما يحدث حولك وبداخلك. دعنا نعمل على تفكيك أفكارك ومخاوفك.",
-      en: "You are in the awareness stage, you have started noticing what is happening around and within you. Let's work on breaking down your thoughts and fears.",
-    },
-    c: {
-      // النمو (Growth) stage
-      ar: "أنت في رحلة نمو مستمرة! هذا رائع. دعنا نركز على توسيع وعيك وتعميق نيتك لتحقيق أهدافك.",
-      en: "You are on a continuous growth journey! That's great. Let's focus on expanding your awareness and deepening your intention to achieve your goals.",
-    },
-    d: {
-      // الاتساق (Consistency) stage
-      ar: "تعيش بوعي واتصال حقيقي مع ذاتك - هذا إنجاز رائع! كيف يمكنني مساعدتك في مشاركة تجربتك ودعم الآخرين؟",
-      en: "You live with awareness and a genuine connection to yourself - that's an amazing achievement! How can I help you share your experience and support others?",
-    },
+  error: {
+    ar: "عذراً، حدث خطأ. هل يمكنك المحاولة مرة أخرى؟",
+    en: "Sorry, an error occurred. Could you try again?",
   },
-  common: {
-    motivation: {
-      ar: [
-        "تذكر أن كل رحلة تبدأ بخطوة واحدة. أنت لست وحدك في هذه المرحلة.",
-        "الوعي الذاتي هو أول خطوة نحو التغيير الحقيقي. استمر في الاستماع لذاتك.",
-        "من المهم أن تحتفل بالإنجازات الصغيرة. كل خطوة صغيرة هي انتصار.",
-      ],
-      en: [
-        "Remember that every journey begins with a single step. You are not alone in this stage.",
-        "Self-awareness is the first step towards real change. Keep listening to yourself.",
-        "It's important to celebrate small achievements. Every small step is a victory.",
-      ],
-    },
-    resources: {
-      ar: [
-        "هل جربت منصة إدراك؟ هناك دورات مجانية قد تساعدك في هذه المرحلة.",
-        "أنصحك بالتواصل مع مستشار مهني من Career180 للمساعدة في تحديد مسارك.",
-        "التحدث مع معالج نفسي قد يكون مفيداً جداً. يمكنك تجربة تطبيق Shezlong للجلسات عبر الإنترنت.",
-      ],
-      en: [
-        "Have you tried the Edraak platform? There are free courses that might help you at this stage.",
-        "I recommend connecting with a career counselor from Career180 to help determine your path.",
-        "Talking with a therapist can be very helpful. You can try the Shezlong app for online sessions.",
-      ],
-    },
+  offline: {
+    ar: "يبدو أنك غير متصل بالإنترنت. سأستخدم ردوداً محدودة حتى تعود للاتصال.",
+    en: "It seems you're offline. I'll use limited responses until you're connected again.",
   },
 };
 
@@ -94,18 +57,23 @@ export default function AIAssistantScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
-  const [messages, setMessages] = useState<MessageType[]>([
-    {
-      id: generateId(),
-      text: aiResponses.greeting[language === "ar" ? "ar" : "en"],
-      sender: "assistant",
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isOnline, setIsOnline] = useState(true); // To track online status
 
   const flatListRef = useRef<FlatList>(null);
+
+  // Initialize with greeting message
+  useEffect(() => {
+    const greetingMessage: MessageType = {
+      id: generateId(),
+      text: fallbackResponses.greeting[language === "ar" ? "ar" : "en"],
+      sender: "assistant",
+      timestamp: new Date(),
+    };
+    setMessages([greetingMessage]);
+  }, [language]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -115,11 +83,12 @@ export default function AIAssistantScreen() {
   }, [messages]);
 
   // Send a message
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputText.trim()) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
+    // Add user message to the chat
     const userMessage: MessageType = {
       id: generateId(),
       text: inputText,
@@ -131,98 +100,84 @@ export default function AIAssistantScreen() {
     setInputText("");
     setIsTyping(true);
 
-    // Simulate AI thinking time
-    setTimeout(() => {
-      const aiReply = generateAIResponse(inputText);
+    try {
+      // Format conversation history for the API
+      const history = formatHistoryForAPI(messages);
+
+      // Get stage info from quiz results if available
+      const stageInfo = quizResult?.type;
+
+      // Get response from the AI service
+      const response = await getAIResponse(
+        inputText,
+        history,
+        language === "ar" ? "ar" : "en",
+        stageInfo
+      );
+
+      // If there was an error getting a response
+      if (response.error) {
+        console.warn("AI Response Error:", response.error);
+      }
+
+      // Add AI response to the chat
       const aiMessage: MessageType = {
         id: generateId(),
-        text: aiReply,
+        text: response.text,
         sender: "assistant",
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+
+      // Add fallback error message
+      const errorMessage: MessageType = {
+        id: generateId(),
+        text: fallbackResponses.error[language === "ar" ? "ar" : "en"],
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+
+      // Show alert about the error
+      Alert.alert(
+        language === "ar" ? "خطأ" : "Error",
+        language === "ar"
+          ? "حدث خطأ أثناء الاتصال بالمساعد الذكي. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
+          : "An error occurred while connecting to the AI assistant. Please check your internet connection and try again."
+      );
+    } finally {
       setIsTyping(false);
-    }, 1500); // 1.5s delay to simulate processing
+    }
   };
 
-  // Generate appropriate AI response based on user input
-  const generateAIResponse = (userText: string) => {
-    const lowerText = userText.toLowerCase();
-
-    // Check if text contains keywords related to feeling lost/confused
-    if (
-      lowerText.includes("lost") ||
-      lowerText.includes("confused") ||
-      lowerText.includes("ضائع") ||
-      lowerText.includes("حائر")
-    ) {
-      return language === "ar"
-        ? aiResponses.stages["a"].ar
-        : aiResponses.stages["a"].en;
-    }
-
-    // Check if text is asking about resources
-    if (
-      lowerText.includes("resource") ||
-      lowerText.includes("help") ||
-      lowerText.includes("book") ||
-      lowerText.includes("موارد") ||
-      lowerText.includes("مساعدة") ||
-      lowerText.includes("كتب")
-    ) {
-      const resourceResponses =
-        aiResponses.common.resources[language === "ar" ? "ar" : "en"];
-      return resourceResponses[
-        Math.floor(Math.random() * resourceResponses.length)
-      ];
-    }
-
-    // If user mentions motivation or feeling down
-    if (
-      lowerText.includes("motivat") ||
-      lowerText.includes("down") ||
-      lowerText.includes("sad") ||
-      lowerText.includes("تحفيز") ||
-      lowerText.includes("حزين")
-    ) {
-      const motivationResponses =
-        aiResponses.common.motivation[language === "ar" ? "ar" : "en"];
-      return motivationResponses[
-        Math.floor(Math.random() * motivationResponses.length)
-      ];
-    }
-
-    // If quiz result exists, reference it
-    if (quizResult) {
-      return language === "ar"
-        ? aiResponses.stages[quizResult.type as keyof typeof aiResponses.stages]
-            .ar
-        : aiResponses.stages[quizResult.type as keyof typeof aiResponses.stages]
-            .en;
-    }
-
-    // Default responses
-    const defaultResponses = {
-      ar: [
-        "هذا سؤال مهم. دعنا نفكر فيه معاً.",
-        "أفهم ما تشعر به. ما الخطوة التي تفكر بها الآن؟",
-        "شكراً لمشاركة أفكارك. هل جربت أن تدون مشاعرك في مذكرة يومية؟",
-      ],
-      en: [
-        "That's an important question. Let's think about it together.",
-        "I understand what you're feeling. What step are you considering now?",
-        "Thank you for sharing your thoughts. Have you tried writing your feelings in a daily journal?",
-      ],
-    };
-
-    const responses = defaultResponses[language === "ar" ? "ar" : "en"];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
-
-  // Render a single message
+  // Render a single message - fixed version
   const renderMessage = ({ item }: { item: MessageType }) => {
     const isUser = item.sender === "user";
+
+    // Improved message text handling
+    let messageContent = "Error: Could not display message";
+    try {
+      if (item.text === null || item.text === undefined) {
+        messageContent = "No message content";
+      } else if (typeof item.text === "string") {
+        messageContent = item.text;
+      } else if (typeof item.text === "function") {
+        // Handle case where text is a function (which should never happen in the UI layer)
+        console.warn(
+          "Message text is a function, this should be handled in the service layer"
+        );
+        messageContent = "Error: Message has incorrect format";
+      } else {
+        // Convert any other type to string as a fallback
+        messageContent = String(item.text);
+      }
+    } catch (err) {
+      console.error("Error processing message:", err);
+    }
 
     return (
       <View
@@ -272,7 +227,7 @@ export default function AIAssistantScreen() {
               isRtl && styles.rtlText,
             ]}
           >
-            {item.text}
+            {messageContent}
           </ThemedText>
         </View>
 
@@ -315,7 +270,9 @@ export default function AIAssistantScreen() {
           {language === "ar" ? "المساعد الذكي" : "AI Assistant"}
         </ThemedText>
 
-        <View style={styles.onlineIndicator} />
+        <View
+          style={[styles.onlineIndicator, !isOnline && styles.offlineIndicator]}
+        />
       </View>
 
       {/* Messages */}
@@ -405,7 +362,7 @@ export default function AIAssistantScreen() {
               ],
             ]}
             onPress={sendMessage}
-            disabled={!inputText.trim()}
+            disabled={!inputText.trim() || isTyping}
           >
             <Ionicons name="send" size={20} color="#fff" />
           </TouchableOpacity>
@@ -452,6 +409,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#4CAF50",
     marginLeft: 8,
+  },
+  offlineIndicator: {
+    backgroundColor: "#ff5252",
   },
   messagesContainer: {
     paddingHorizontal: 15,

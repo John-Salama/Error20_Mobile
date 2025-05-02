@@ -1,4 +1,3 @@
-when the phone is on dark theme the application color is not good fix it
 real ai
 change app icon
 extract apk
@@ -8,3 +7,4 @@ redesign workshops page - done
 video tab - done
 add splash screen - done
 navigation - done
+when the phone is on dark theme the application color is not good fix it - done
