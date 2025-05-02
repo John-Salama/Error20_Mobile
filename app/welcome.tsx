@@ -25,34 +25,36 @@ export default function WelcomeScreen() {
 
   // Animation values
   const logoOpacity = useSharedValue(0);
-  const logoScale = useSharedValue(0.8);
+  const logoScale = useSharedValue(0.9); // Start closer to final size for smoother transition from native splash
   const contentOpacity = useSharedValue(0);
   const contentTranslateY = useSharedValue(50);
 
   useEffect(() => {
     // Start animations when component mounts
-    const animationDuration = 800;
+    // Using faster initial animations for splash screen feel
+    const logoAnimDuration = 600; // Faster initial animation
+    const contentAnimDuration = 800;
 
-    // Logo animation
+    // Logo animation - start immediately with the logo visible
     logoOpacity.value = withTiming(1, {
-      duration: animationDuration,
+      duration: logoAnimDuration,
       easing: Easing.out(Easing.ease),
     });
 
     logoScale.value = withTiming(1, {
-      duration: animationDuration,
-      easing: Easing.elastic(1.2),
+      duration: logoAnimDuration,
+      easing: Easing.elastic(1.1),
     });
 
-    // Content animation with delay
+    // Content animation with slight delay
     contentOpacity.value = withDelay(
-      200,
-      withTiming(1, { duration: animationDuration })
+      logoAnimDuration - 100, // Overlap slightly with logo animation
+      withTiming(1, { duration: contentAnimDuration })
     );
 
     contentTranslateY.value = withDelay(
-      200,
-      withTiming(0, { duration: animationDuration })
+      logoAnimDuration - 100,
+      withTiming(0, { duration: contentAnimDuration })
     );
   }, []);
 
@@ -84,9 +86,10 @@ export default function WelcomeScreen() {
   const t = translations[language];
 
   // Choose gradient colors based on theme
+  // Using primaryDark color that matches the splash screen background in app.json
   const gradientColors =
     colorScheme === "light"
-      ? [colors.primaryLight, colors.primaryDark]
+      ? ["#6E41BF", colors.primaryDark] // Match splash screen to start
       : [colors.primaryDark, "#2A1F37"];
 
   return (

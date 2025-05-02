@@ -1,4 +1,4 @@
-import thumbnail1 from "../images/1.jpg";
+import thumbnail1 from "../images/icon.png";
 
 const videos = [
   {

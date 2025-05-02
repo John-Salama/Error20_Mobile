@@ -2,7 +2,7 @@ import { AppProvider } from "@/context/AppContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
@@ -11,7 +11,7 @@ export {
   ErrorBoundary,
 } from "expo-router";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -27,7 +27,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      // We'll keep the splash screen visible a bit longer and hide it
+      // when the welcome screen is ready with its animations
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 100); // Small timeout for smoother transition
     }
   }, [loaded]);
 
@@ -36,6 +40,11 @@ export default function RootLayout() {
   }
 
   return <RootLayoutNav />;
+}
+
+// Redirect from the root to the welcome screen
+export function Index() {
+  return <Redirect href="/welcome" />;
 }
 
 function RootLayoutNav() {
