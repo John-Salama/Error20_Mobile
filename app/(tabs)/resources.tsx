@@ -24,7 +24,7 @@ export default function ResourcesScreen() {
   const isRtl = language === "ar";
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
   const tintColor = useThemeColor({}, "primary");
 
   const handleResourcePress = async (url: string) => {
@@ -71,10 +71,12 @@ export default function ResourcesScreen() {
     <ThemedView style={styles.container}>
       <StatusBar style={isDark ? "light" : "auto"} />
 
-      <View style={[
-        styles.header, 
-        { backgroundColor: isDark ? colors.primaryDark : colors.primary }
-      ]}>
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: isDark ? colors.primaryDark : colors.primary },
+        ]}
+      >
         <ThemedText style={styles.headerTitle}>
           {language === "ar" ? "الموارد والدعم" : "Resources & Support"}
         </ThemedText>
@@ -139,28 +141,30 @@ export default function ResourcesScreen() {
               key={index}
               style={[
                 styles.resourceCard,
-                { 
-                  backgroundColor: isDark 
-                    ? colors.darkElevated || '#2C2C2C' 
-                    : '#f5f5f5' 
-                }
+                {
+                  backgroundColor: isDark
+                    ? colors.darkElevated || "#2C2C2C"
+                    : "#f5f5f5",
+                },
               ]}
               onPress={() => handleResourcePress(resource.link)}
             >
               <View
                 style={[
                   styles.resourceIconContainer,
-                  { 
-                    backgroundColor: isDark 
-                      ? 'rgba(198, 125, 255, 0.2)' 
-                      : colors.primaryBackground 
+                  {
+                    backgroundColor: isDark
+                      ? "rgba(198, 125, 255, 0.2)"
+                      : colors.primaryBackground,
                   },
                 ]}
               >
-                <ThemedText style={[
-                  styles.resourceIcon,
-                  isDark && { color: colors.primary }
-                ]}>
+                <ThemedText
+                  style={[
+                    styles.resourceIcon,
+                    isDark && { color: colors.primary },
+                  ]}
+                >
                   {resource.icon}
                 </ThemedText>
               </View>
@@ -172,9 +176,9 @@ export default function ResourcesScreen() {
                 </ThemedText>
                 <ThemedText
                   style={[
-                    styles.resourceDescription, 
+                    styles.resourceDescription,
                     isRtl && styles.rtlText,
-                    isDark && { color: colors.grayMedium }
+                    isDark && { color: colors.grayMedium },
                   ]}
                 >
                   {getDescription(resource)}
@@ -200,7 +204,7 @@ export default function ResourcesScreen() {
           <TouchableOpacity
             style={[
               styles.aiAssistantCard,
-              { backgroundColor: isDark ? '#332A40' : colors.primaryDark },
+              { backgroundColor: isDark ? "#332A40" : colors.primaryDark },
             ]}
             onPress={() => router.push("/ai-assistant")}
           >

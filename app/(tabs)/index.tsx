@@ -24,7 +24,7 @@ export default function HomeScreen() {
   const isRtl = language === "ar";
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
 
   const startQuiz = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -48,7 +48,7 @@ export default function HomeScreen() {
 
   // Choose gradient colors based on theme
   const headerGradient = isDark
-    ? [colors.primaryDark, '#2A1F37'] 
+    ? [colors.primaryDark, "#2A1F37"]
     : [colors.primaryLight, colors.primary];
 
   return (
@@ -56,10 +56,7 @@ export default function HomeScreen() {
       <StatusBar style="light" />
 
       {/* Header */}
-      <LinearGradient
-        colors={headerGradient}
-        style={styles.header}
-      >
+      <LinearGradient colors={headerGradient} style={styles.header}>
         {/* Logo */}
         <ExpoImage
           source={require("../../assets/images/logo.png")}
@@ -81,15 +78,15 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Quiz Card */}
-        <View 
+        <View
           style={[
-            styles.card, 
-            { 
+            styles.card,
+            {
               backgroundColor: colors.background,
               shadowColor: isDark ? "rgba(0,0,0,0.5)" : "#000",
-              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'transparent',
+              borderColor: isDark ? "rgba(255,255,255,0.1)" : "transparent",
               borderWidth: isDark ? 1 : 0,
-            }
+            },
           ]}
         >
           <View style={styles.cardHeader}>
@@ -111,11 +108,11 @@ export default function HomeScreen() {
             />
           </View>
 
-          <ThemedText 
+          <ThemedText
             style={[
-              styles.cardDescription, 
+              styles.cardDescription,
               isRtl && styles.rtlText,
-              isDark && { color: colors.text }
+              isDark && { color: colors.text },
             ]}
           >
             {language === "ar"
@@ -180,12 +177,12 @@ export default function HomeScreen() {
         <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={[
-              styles.actionCard, 
-              { 
-                backgroundColor: isDark 
-                  ? colors.indigoBackground || "#2D3452" 
-                  : colors.indigo 
-              }
+              styles.actionCard,
+              {
+                backgroundColor: isDark
+                  ? colors.indigoBackground || "#2D3452"
+                  : colors.indigo,
+              },
             ]}
             onPress={viewResources}
           >
@@ -197,12 +194,12 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={[
-              styles.actionCard, 
-              { 
-                backgroundColor: isDark 
-                  ? colors.pinkBackground || "#3D2A3A" 
-                  : colors.pink 
-              }
+              styles.actionCard,
+              {
+                backgroundColor: isDark
+                  ? colors.pinkBackground || "#3D2A3A"
+                  : colors.pink,
+              },
             ]}
             onPress={viewWorkshops}
           >
@@ -217,7 +214,7 @@ export default function HomeScreen() {
         <TouchableOpacity
           style={[
             styles.aiAssistantCard,
-            { backgroundColor: isDark ? '#332A40' : colors.primaryDark },
+            { backgroundColor: isDark ? "#332A40" : colors.primaryDark },
           ]}
           onPress={talkToAssistant}
         >
@@ -256,10 +253,10 @@ export default function HomeScreen() {
 
         {/* Attribution */}
         <View style={styles.attribution}>
-          <ThemedText 
+          <ThemedText
             style={[
               styles.attributionText,
-              { color: isDark ? '#777777' : '#999999' }
+              { color: isDark ? "#777777" : "#999999" },
             ]}
           >
             Error 20 © 2025

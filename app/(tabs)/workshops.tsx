@@ -23,7 +23,7 @@ export default function WorkshopsScreen() {
   const isRtl = language === "ar";
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
 
   const handleWorkshopPress = async (url: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -54,10 +54,12 @@ export default function WorkshopsScreen() {
     <ThemedView style={styles.container}>
       <StatusBar style={isDark ? "light" : "light"} />
 
-      <View style={[
-        styles.header, 
-        { backgroundColor: isDark ? colors.primaryDark : colors.primary }
-      ]}>
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: isDark ? colors.primaryDark : colors.primary },
+        ]}
+      >
         <ThemedText style={styles.headerTitle}>
           {language === "ar" ? "ورش العمل والفعاليات" : "Workshops & Events"}
         </ThemedText>
@@ -91,10 +93,10 @@ export default function WorkshopsScreen() {
             <View
               style={[
                 styles.featuredOverlay,
-                { 
-                  backgroundColor: isDark 
-                    ? "rgba(114, 40, 200, 0.85)" 
-                    : "rgba(114, 40, 200, 0.7)" 
+                {
+                  backgroundColor: isDark
+                    ? "rgba(114, 40, 200, 0.85)"
+                    : "rgba(114, 40, 200, 0.7)",
                 },
               ]}
             >
@@ -149,10 +151,10 @@ export default function WorkshopsScreen() {
                 key={index}
                 style={[
                   styles.workshopCard,
-                  { 
-                    backgroundColor: isDark 
-                      ? colors.darkElevated || '#2C2C2C' 
-                      : colors.primaryBackground 
+                  {
+                    backgroundColor: isDark
+                      ? colors.darkElevated || "#2C2C2C"
+                      : colors.primaryBackground,
                   },
                 ]}
                 onPress={() => handleWorkshopPress(workshop.link)}
@@ -182,7 +184,7 @@ export default function WorkshopsScreen() {
                     style={[
                       styles.workshopDescription,
                       isRtl && styles.rtlText,
-                      isDark && { color: colors.grayMedium }
+                      isDark && { color: colors.grayMedium },
                     ]}
                     numberOfLines={2}
                   >
@@ -191,30 +193,30 @@ export default function WorkshopsScreen() {
 
                   <View style={styles.workshopDetails}>
                     <View style={styles.workshopDetailItem}>
-                      <Ionicons 
-                        name="person-outline" 
-                        size={16} 
-                        color={isDark ? colors.grayMedium : "#666"} 
+                      <Ionicons
+                        name="person-outline"
+                        size={16}
+                        color={isDark ? colors.grayMedium : "#666"}
                       />
-                      <ThemedText 
+                      <ThemedText
                         style={[
                           styles.workshopDetailText,
-                          isDark && { color: colors.grayMedium }
+                          isDark && { color: colors.grayMedium },
                         ]}
                       >
                         {workshopData.instructor}
                       </ThemedText>
                     </View>
                     <View style={styles.workshopDetailItem}>
-                      <Ionicons 
-                        name="time-outline" 
-                        size={16} 
-                        color={isDark ? colors.grayMedium : "#666"} 
+                      <Ionicons
+                        name="time-outline"
+                        size={16}
+                        color={isDark ? colors.grayMedium : "#666"}
                       />
-                      <ThemedText 
+                      <ThemedText
                         style={[
                           styles.workshopDetailText,
-                          isDark && { color: colors.grayMedium }
+                          isDark && { color: colors.grayMedium },
                         ]}
                       >
                         {workshopData.duration}
@@ -226,10 +228,10 @@ export default function WorkshopsScreen() {
                         size={16}
                         color={isDark ? colors.grayMedium : "#666"}
                       />
-                      <ThemedText 
+                      <ThemedText
                         style={[
                           styles.workshopDetailText,
-                          isDark && { color: colors.grayMedium }
+                          isDark && { color: colors.grayMedium },
                         ]}
                       >
                         {workshopData.location}
@@ -258,11 +260,13 @@ export default function WorkshopsScreen() {
         <View style={styles.findMoreContainer}>
           <View
             style={[
-              styles.findMoreCard, 
-              { 
+              styles.findMoreCard,
+              {
                 borderColor: colors.primaryLight,
-                backgroundColor: isDark ? colors.darkElevated || '#2C2C2C' : '#f8f8f8'
-              }
+                backgroundColor: isDark
+                  ? colors.darkElevated || "#2C2C2C"
+                  : "#f8f8f8",
+              },
             ]}
           >
             <ThemedText style={[styles.findMoreTitle, isRtl && styles.rtlText]}>
@@ -270,11 +274,11 @@ export default function WorkshopsScreen() {
                 ? "تبحث عن المزيد من الفعاليات؟"
                 : "Looking for more events?"}
             </ThemedText>
-            <ThemedText 
+            <ThemedText
               style={[
-                styles.findMoreText, 
+                styles.findMoreText,
                 isRtl && styles.rtlText,
-                isDark && { color: colors.grayMedium }
+                isDark && { color: colors.grayMedium },
               ]}
             >
               {language === "ar"

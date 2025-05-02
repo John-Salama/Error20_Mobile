@@ -45,7 +45,8 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.tint,
-        tabBarInactiveTintColor: colorScheme === 'dark' ? colors.grayMedium : undefined,
+        tabBarInactiveTintColor:
+          colorScheme === "dark" ? colors.grayMedium : undefined,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -55,16 +56,21 @@ export default function TabLayout() {
             position: "absolute",
             // Enhanced shadow for dark mode
             ...styles.tabBar,
-            shadowColor: colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.5)' : undefined,
+            shadowColor:
+              colorScheme === "dark" ? "rgba(0, 0, 0, 0.5)" : undefined,
           },
           default: {
-            backgroundColor: colorScheme === 'dark' ? colors.darkElevated || '#2C2C2C' : undefined,
-            borderTopColor: colorScheme === 'dark' ? 'rgba(255,255,255,0.1)' : undefined,
+            backgroundColor:
+              colorScheme === "dark"
+                ? colors.darkElevated || "#2C2C2C"
+                : undefined,
+            borderTopColor:
+              colorScheme === "dark" ? "rgba(255,255,255,0.1)" : undefined,
           },
         }),
         tabBarLabelStyle: {
-          fontWeight: '500',
-        }
+          fontWeight: "500",
+        },
       }}
     >
       <Tabs.Screen
