@@ -17,13 +17,11 @@ import { ThemedText } from "../components/ThemedText";
 import { Colors } from "../constants/Colors";
 import { useAppContext } from "../context/AppContext";
 import { useColorScheme } from "../hooks/useColorScheme";
-import { useThemeColor } from "../hooks/useThemeColor";
 
 export default function WelcomeScreen() {
   const { language, setLanguage } = useAppContext();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const tintColor = useThemeColor({}, "primary");
 
   // Animation values
   const logoOpacity = useSharedValue(0);

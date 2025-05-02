@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { language, translations } = useAppContext();
+  const { translations } = useAppContext();
 
   // Handle hardware back button for tabs
   useEffect(() => {
