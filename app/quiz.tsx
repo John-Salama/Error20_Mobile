@@ -1,9 +1,11 @@
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
   Animated,
+  BackHandler,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -16,11 +18,9 @@ import { ThemedView } from "../components/ThemedView";
 import { Colors } from "../constants/Colors";
 import { useAppContext } from "../context/AppContext";
 import { useColorScheme } from "../hooks/useColorScheme";
-import { useThemeColor } from "../hooks/useThemeColor";
 
 export default function QuizScreen() {
-  const { language, setQuizAnswers, quizAnswers, calculateQuizResult } =
-    useAppContext();
+  const { language, setQuizAnswers, quizAnswers } = useAppContext();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<string[]>([...quizAnswers]);
   const [progressAnim] = useState(new Animated.Value(0));
@@ -28,12 +28,8 @@ export default function QuizScreen() {
   const isRtl = language === "ar";
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const tintColor = useThemeColor({}, "primary");
-  const backgroundColor = useThemeColor(
-    { light: "#fff", dark: "#151718" },
-    "background"
-  );
 
+  const isFirstQuestion = currentQuestionIndex === 0;
   const currentQuestion = quizData.questions[currentQuestionIndex];
   const progress = currentQuestionIndex / (quizData.questions.length - 1);
 
@@ -43,6 +39,26 @@ export default function QuizScreen() {
       duration: 300,
       useNativeDriver: false,
     }).start();
+  }, [currentQuestionIndex, progress, progressAnim]);
+
+  // Handle hardware back button
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        // If we're not on the first question, go back to previous question
+        if (currentQuestionIndex > 0) {
+          goToPreviousQuestion();
+          return true; // Prevent default behavior (exiting the app)
+        } else {
+          // If we're on the first question, go to welcome screen
+          router.push("/welcome");
+          return true; // Prevent default behavior
+        }
+      }
+    );
+
+    return () => backHandler.remove(); // Clean up the event listener
   }, [currentQuestionIndex]);
 
   const handleOptionSelect = (optionId: string) => {
@@ -84,12 +100,34 @@ export default function QuizScreen() {
     }
   };
 
+  const goToWelcomeScreen = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    router.push("/welcome");
+  };
+
   const questionText =
     language === "ar" ? currentQuestion.text : currentQuestion.textEn;
 
   return (
     <ThemedView style={styles.container}>
       <StatusBar style="auto" />
+
+      {/* Back button in top left corner */}
+      <TouchableOpacity
+        style={styles.backToHomeButton}
+        onPress={goToWelcomeScreen}
+      >
+        <View style={styles.backButtonContent}>
+          <Ionicons
+            name={isRtl ? "arrow-back" : "arrow-back"}
+            size={24}
+            color={colors.primary}
+          />
+          <ThemedText style={styles.backButtonLabel}>
+            {language === "ar" ? "رجوع" : "Back"}
+          </ThemedText>
+        </View>
+      </TouchableOpacity>
 
       {/* Progress bar */}
       <View style={styles.progressContainer}>
@@ -156,24 +194,26 @@ export default function QuizScreen() {
       </ScrollView>
 
       <View style={styles.buttonsContainer}>
-        {currentQuestionIndex > 0 ? (
-          <TouchableOpacity
+        <TouchableOpacity
+          style={[
+            styles.button,
+            styles.backButton,
+            { borderColor: colors.primary },
+            isFirstQuestion && styles.disabledButton,
+          ]}
+          onPress={goToPreviousQuestion}
+          disabled={isFirstQuestion}
+        >
+          <ThemedText
             style={[
-              styles.button,
-              styles.backButton,
-              { borderColor: colors.primary },
+              styles.backButtonText,
+              { color: colors.primary },
+              isFirstQuestion && styles.disabledButtonText,
             ]}
-            onPress={goToPreviousQuestion}
           >
-            <ThemedText
-              style={[styles.backButtonText, { color: colors.primary }]}
-            >
-              {language === "ar" ? "السابق" : "Previous"}
-            </ThemedText>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.buttonPlaceholder} />
-        )}
+            {language === "ar" ? "السابق" : "Previous"}
+          </ThemedText>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={[
@@ -205,6 +245,26 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  backToHomeButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    zIndex: 10,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  backButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  backButtonLabel: {
+    marginLeft: 5,
+    fontSize: 16,
+    fontWeight: "500",
+  },
   progressContainer: {
     height: 8,
     backgroundColor: "#e0e0e0",
@@ -214,7 +274,6 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: "100%",
-    backgroundColor: "#0a7ea4",
   },
   progressText: {
     marginTop: 10,
@@ -270,9 +329,6 @@ const styles = StyleSheet.create({
     minWidth: 120,
     alignItems: "center",
   },
-  buttonPlaceholder: {
-    minWidth: 120,
-  },
   backButton: {
     backgroundColor: "transparent",
     borderWidth: 1,
@@ -281,6 +337,9 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 16,
     color: "#666666",
+  },
+  disabledButtonText: {
+    color: "#ffffff",
   },
   nextButton: {
     backgroundColor: "#0a7ea4",
