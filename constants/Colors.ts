@@ -21,6 +21,14 @@ const grayLight = "#f3f4f6"; // gray-100
 const grayMedium = "#9BA1A6"; // gray-400
 const grayDark = "#374151"; // gray-700
 
+// Enhanced dark mode colors
+const darkBackground = "#121212";
+const darkSurface = "#1E1E1E";
+const darkElevated = "#2C2C2C";
+const darkPurple = "#c67dff";
+const darkText = "#F0F0F0";
+const darkSubtext = "#B0B0B0";
+
 export const Colors = {
   light: {
     text: "#11181C",
@@ -48,28 +56,28 @@ export const Colors = {
     grayLight: grayLight,
   },
   dark: {
-    text: "#ECEDEE",
-    background: "#151718",
-    tint: purpleLight,
-    icon: grayMedium,
-    tabIconDefault: grayMedium,
-    tabIconSelected: purpleLight,
+    text: darkText,
+    background: darkBackground,
+    tint: darkPurple,
+    icon: darkSubtext,
+    tabIconDefault: darkSubtext,
+    tabIconSelected: darkPurple,
 
     // Primary Purple Theme
-    primary: purpleLight,
-    primaryDark: purpleDark,
-    primaryLight: purplePrimary,
-    primaryBackground: purpleDark,
+    primary: darkPurple,
+    primaryDark: "#a44dff",
+    primaryLight: "#d9a7ff",
+    primaryBackground: darkElevated,
 
     // Secondary Colors
-    indigo: indigoLight,
-    indigoBackground: indigoDark,
-    pink: pinkLight,
-    pinkBackground: pinkDark,
+    indigo: "#8da2fb",
+    indigoBackground: "#2D3452",
+    pink: "#ff9ad5",
+    pinkBackground: "#3D2A3A",
 
     // Neutral Colors
     gray: grayLight,
-    grayMedium: grayMedium,
-    grayDark: grayDark,
+    grayMedium: "#A0A0A0",
+    grayDark: darkSurface,
   },
 };

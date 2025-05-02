@@ -7,3 +7,4 @@ change lang not effect in pages its effect in welcome page only i want it to eff
 redesign workshops page - done 
 video tab - done
 add splash screen - done
+navigation - done

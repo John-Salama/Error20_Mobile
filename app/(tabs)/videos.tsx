@@ -32,6 +32,7 @@ export default function VideosScreen() {
   const isRtl = language === "ar";
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const isDark = colorScheme === 'dark';
   const tintColor = useThemeColor({}, "primary");
 
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -125,9 +126,12 @@ export default function VideosScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? "light" : "auto"} />
 
-      <View style={[styles.header, { backgroundColor: colors.primary }]}>
+      <View style={[
+        styles.header, 
+        { backgroundColor: isDark ? colors.primaryDark : colors.primary }
+      ]}>
         <ThemedText style={styles.headerTitle}>
           {translations.videos.title}
         </ThemedText>
@@ -145,7 +149,10 @@ export default function VideosScreen() {
           {videos.map((video, index) => (
             <TouchableOpacity
               key={index}
-              style={styles.videoCard}
+              style={[
+                styles.videoCard,
+                { backgroundColor: isDark ? colors.darkElevated || '#2C2C2C' : '#f5f5f5' }
+              ]}
               onPress={() => handleVideoPress(video)}
             >
               <View style={styles.thumbnailContainer}>
@@ -166,7 +173,11 @@ export default function VideosScreen() {
                   {getTitle(video)}
                 </ThemedText>
                 <ThemedText
-                  style={[styles.videoDescription, isRtl && styles.rtlText]}
+                  style={[
+                    styles.videoDescription, 
+                    isRtl && styles.rtlText,
+                    isDark && { color: colors.grayMedium }
+                  ]}
                   numberOfLines={2}
                 >
                   {getDescription(video)}
@@ -195,8 +206,16 @@ export default function VideosScreen() {
         visible={videoModalVisible}
         onRequestClose={closeVideoModal}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+        <View style={[
+          styles.modalContainer,
+          { backgroundColor: isDark ? colors.darkBackground : "#fff" }
+        ]}>
+          <View style={[
+            styles.modalHeader,
+            { 
+              borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : '#eee',
+            }
+          ]}>
             <TouchableOpacity
               style={styles.closeButton}
               onPress={closeVideoModal}
@@ -263,7 +282,10 @@ export default function VideosScreen() {
                       ? "حدث خطأ أثناء تحميل الفيديو"
                       : "Error loading video"}
                   </ThemedText>
-                  <ThemedText style={styles.errorDescription}>
+                  <ThemedText style={[
+                    styles.errorDescription,
+                    isDark && { color: colors.grayMedium }
+                  ]}>
                     {language === "ar"
                       ? "قد يكون ذلك بسبب مشكلة في شهادة الأمان أو قيود Facebook"
                       : "This may be due to an SSL certificate issue or Facebook restrictions"}

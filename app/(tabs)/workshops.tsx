@@ -23,6 +23,7 @@ export default function WorkshopsScreen() {
   const isRtl = language === "ar";
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const isDark = colorScheme === 'dark';
 
   const handleWorkshopPress = async (url: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -51,9 +52,12 @@ export default function WorkshopsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "light"} />
 
-      <View style={[styles.header, { backgroundColor: colors.primary }]}>
+      <View style={[
+        styles.header, 
+        { backgroundColor: isDark ? colors.primaryDark : colors.primary }
+      ]}>
         <ThemedText style={styles.headerTitle}>
           {language === "ar" ? "ورش العمل والفعاليات" : "Workshops & Events"}
         </ThemedText>
@@ -87,7 +91,11 @@ export default function WorkshopsScreen() {
             <View
               style={[
                 styles.featuredOverlay,
-                { backgroundColor: "rgba(114, 40, 200, 0.7)" },
+                { 
+                  backgroundColor: isDark 
+                    ? "rgba(114, 40, 200, 0.85)" 
+                    : "rgba(114, 40, 200, 0.7)" 
+                },
               ]}
             >
               <View style={styles.badgeContainer}>
@@ -141,7 +149,11 @@ export default function WorkshopsScreen() {
                 key={index}
                 style={[
                   styles.workshopCard,
-                  { backgroundColor: colors.primaryBackground },
+                  { 
+                    backgroundColor: isDark 
+                      ? colors.darkElevated || '#2C2C2C' 
+                      : colors.primaryBackground 
+                  },
                 ]}
                 onPress={() => handleWorkshopPress(workshop.link)}
               >
@@ -170,6 +182,7 @@ export default function WorkshopsScreen() {
                     style={[
                       styles.workshopDescription,
                       isRtl && styles.rtlText,
+                      isDark && { color: colors.grayMedium }
                     ]}
                     numberOfLines={2}
                   >
@@ -178,14 +191,32 @@ export default function WorkshopsScreen() {
 
                   <View style={styles.workshopDetails}>
                     <View style={styles.workshopDetailItem}>
-                      <Ionicons name="person-outline" size={16} color="#666" />
-                      <ThemedText style={styles.workshopDetailText}>
+                      <Ionicons 
+                        name="person-outline" 
+                        size={16} 
+                        color={isDark ? colors.grayMedium : "#666"} 
+                      />
+                      <ThemedText 
+                        style={[
+                          styles.workshopDetailText,
+                          isDark && { color: colors.grayMedium }
+                        ]}
+                      >
                         {workshopData.instructor}
                       </ThemedText>
                     </View>
                     <View style={styles.workshopDetailItem}>
-                      <Ionicons name="time-outline" size={16} color="#666" />
-                      <ThemedText style={styles.workshopDetailText}>
+                      <Ionicons 
+                        name="time-outline" 
+                        size={16} 
+                        color={isDark ? colors.grayMedium : "#666"} 
+                      />
+                      <ThemedText 
+                        style={[
+                          styles.workshopDetailText,
+                          isDark && { color: colors.grayMedium }
+                        ]}
+                      >
                         {workshopData.duration}
                       </ThemedText>
                     </View>
@@ -193,9 +224,14 @@ export default function WorkshopsScreen() {
                       <Ionicons
                         name="location-outline"
                         size={16}
-                        color="#666"
+                        color={isDark ? colors.grayMedium : "#666"}
                       />
-                      <ThemedText style={styles.workshopDetailText}>
+                      <ThemedText 
+                        style={[
+                          styles.workshopDetailText,
+                          isDark && { color: colors.grayMedium }
+                        ]}
+                      >
                         {workshopData.location}
                       </ThemedText>
                     </View>
@@ -221,14 +257,26 @@ export default function WorkshopsScreen() {
         {/* Find more section */}
         <View style={styles.findMoreContainer}>
           <View
-            style={[styles.findMoreCard, { borderColor: colors.primaryLight }]}
+            style={[
+              styles.findMoreCard, 
+              { 
+                borderColor: colors.primaryLight,
+                backgroundColor: isDark ? colors.darkElevated || '#2C2C2C' : '#f8f8f8'
+              }
+            ]}
           >
             <ThemedText style={[styles.findMoreTitle, isRtl && styles.rtlText]}>
               {language === "ar"
                 ? "تبحث عن المزيد من الفعاليات؟"
                 : "Looking for more events?"}
             </ThemedText>
-            <ThemedText style={[styles.findMoreText, isRtl && styles.rtlText]}>
+            <ThemedText 
+              style={[
+                styles.findMoreText, 
+                isRtl && styles.rtlText,
+                isDark && { color: colors.grayMedium }
+              ]}
+            >
               {language === "ar"
                 ? "زور موقعنا الإلكتروني لمشاهدة جميع الفعاليات القادمة ومواد إضافية"
                 : "Visit our website to view all upcoming events and additional materials"}

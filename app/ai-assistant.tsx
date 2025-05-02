@@ -249,13 +249,26 @@ export default function AIAssistantScreen() {
             styles.messageBubble,
             isUser
               ? [styles.userBubble, { backgroundColor: colors.primary }]
-              : styles.aiBubble,
+              : [
+                  styles.aiBubble,
+                  {
+                    backgroundColor:
+                      colorScheme === "dark"
+                        ? colors.darkElevated || "#2C2C2C"
+                        : "#f1f1f1",
+                  },
+                ],
           ]}
         >
           <ThemedText
             style={[
               styles.messageText,
-              isUser ? styles.userMessageText : styles.aiMessageText,
+              isUser
+                ? styles.userMessageText
+                : [
+                    styles.aiMessageText,
+                    { color: colorScheme === "dark" ? colors.text : "#333" },
+                  ],
               isRtl && styles.rtlText,
             ]}
           >
@@ -282,7 +295,15 @@ export default function AIAssistantScreen() {
       <StatusBar style="light" />
 
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.primaryDark }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor:
+              colorScheme === "dark" ? "#332A40" : colors.primaryDark,
+          },
+        ]}
+      >
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
@@ -312,9 +333,24 @@ export default function AIAssistantScreen() {
         <View
           style={[styles.typingContainer, isRtl && styles.typingContainerRtl]}
         >
-          <View style={styles.typingBubble}>
+          <View
+            style={[
+              styles.typingBubble,
+              {
+                backgroundColor:
+                  colorScheme === "dark"
+                    ? colors.darkElevated || "#2C2C2C"
+                    : "#f1f1f1",
+              },
+            ]}
+          >
             <ActivityIndicator size="small" color={colors.primary} />
-            <ThemedText style={styles.typingText}>
+            <ThemedText
+              style={[
+                styles.typingText,
+                { color: colorScheme === "dark" ? "#B0B0B0" : "#666" },
+              ]}
+            >
               {language === "ar" ? "يكتب..." : "Typing..."}
             </ThemedText>
           </View>
@@ -325,17 +361,33 @@ export default function AIAssistantScreen() {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-        style={styles.inputContainer}
+        style={[
+          styles.inputContainer,
+          {
+            borderTopColor:
+              colorScheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "#eee",
+          },
+        ]}
       >
         <View style={styles.inputWrapper}>
           <TextInput
-            style={[styles.input, isRtl && styles.rtlText]}
+            style={[
+              styles.input,
+              isRtl && styles.rtlText,
+              {
+                backgroundColor:
+                  colorScheme === "dark"
+                    ? colors.darkElevated || "#2C2C2C"
+                    : "#f5f5f5",
+                color: colorScheme === "dark" ? colors.text : "#333",
+              },
+            ]}
             placeholder={
               language === "ar"
                 ? "اكتب رسالتك هنا..."
                 : "Type your message here..."
             }
-            placeholderTextColor="#999"
+            placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
             value={inputText}
             onChangeText={setInputText}
             multiline
@@ -347,7 +399,10 @@ export default function AIAssistantScreen() {
             style={[
               styles.sendButton,
               { backgroundColor: colors.primary },
-              !inputText.trim() && styles.disabledSendButton,
+              !inputText.trim() && [
+                styles.disabledSendButton,
+                { backgroundColor: colorScheme === "dark" ? "#444" : "#ccc" },
+              ],
             ]}
             onPress={sendMessage}
             disabled={!inputText.trim()}
@@ -356,7 +411,12 @@ export default function AIAssistantScreen() {
           </TouchableOpacity>
         </View>
 
-        <ThemedText style={styles.disclaimer}>
+        <ThemedText
+          style={[
+            styles.disclaimer,
+            { color: colorScheme === "dark" ? "#999" : "#999" },
+          ]}
+        >
           {language === "ar"
             ? "هذا مساعد ذكي يقدم نصائح عامة. للحالات الطارئة، يرجى الاتصال بمختص."
             : "This is an AI assistant providing general advice. For emergencies, please contact a professional."}

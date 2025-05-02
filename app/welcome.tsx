@@ -83,12 +83,15 @@ export default function WelcomeScreen() {
 
   const t = translations[language];
 
+  // Choose gradient colors based on theme
+  const gradientColors =
+    colorScheme === "light"
+      ? [colors.primaryLight, colors.primaryDark]
+      : [colors.primaryDark, "#2A1F37"];
+
   return (
-    <LinearGradient
-      colors={[colors.primaryLight, colors.primaryDark]}
-      style={styles.gradient}
-    >
-      <StatusBar style="light" />
+    <LinearGradient colors={gradientColors} style={styles.gradient}>
+      <StatusBar style={colorScheme === "light" ? "light" : "light"} />
       <View style={styles.container}>
         <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
           <Image
@@ -101,40 +104,76 @@ export default function WelcomeScreen() {
         <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
           <ThemedText
             style={[styles.title, language === "ar" ? styles.rtlText : {}]}
+            lightColor="#ffffff"
+            darkColor="#ffffff"
           >
             {t.hero.title}
           </ThemedText>
 
           <ThemedText
             style={[styles.subtitle, language === "ar" ? styles.rtlText : {}]}
+            lightColor="#f0f0f0"
+            darkColor="#e0e0e0"
           >
             {t.hero.subtitle}
           </ThemedText>
 
           <TouchableOpacity
-            style={[styles.quizButton, { backgroundColor: "#ffffff" }]}
+            style={[
+              styles.quizButton,
+              {
+                backgroundColor:
+                  colorScheme === "light" ? "#ffffff" : "#ffffff",
+              },
+            ]}
             onPress={startQuiz}
           >
-            <ThemedText style={[styles.buttonText, { color: colors.primary }]}>
+            <ThemedText
+              style={[
+                styles.buttonText,
+                {
+                  color:
+                    colorScheme === "light"
+                      ? colors.primary
+                      : colors.primaryDark,
+                },
+              ]}
+            >
               {t.hero.selfAwarenessTest}
             </ThemedText>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.resourcesButton}
+            style={[
+              styles.resourcesButton,
+              colorScheme === "dark" ? { borderColor: colors.primary } : {},
+            ]}
             onPress={() => router.push("/")}
           >
-            <ThemedText style={styles.buttonTextAlt}>
-              {language === "ar" ? "الصفحة الرئيسية" : "Return Home"}
+            <ThemedText
+              style={styles.buttonTextAlt}
+              lightColor="#ffffff"
+              darkColor={colors.primary}
+            >
+              {language === "ar" ? "الصفحة الرئيسية" : "Home Page"}
             </ThemedText>
           </TouchableOpacity>
         </Animated.View>
 
         <TouchableOpacity
-          style={styles.languageToggle}
+          style={[
+            styles.languageToggle,
+            colorScheme === "dark"
+              ? { backgroundColor: "rgba(198, 125, 255, 0.25)" }
+              : {},
+          ]}
           onPress={toggleLanguage}
         >
-          <ThemedText style={styles.languageText}>
+          <ThemedText
+            style={styles.languageText}
+            lightColor="#ffffff"
+            darkColor="#ffffff"
+          >
             {language === "ar" ? "English" : "العربية"}
           </ThemedText>
         </TouchableOpacity>

@@ -65,7 +65,7 @@ export default function QuizResultScreen() {
   if (!quizResult) {
     return (
       <ThemedView style={[styles.container, styles.loadingContainer]}>
-        <StatusBar style="light" />
+        <StatusBar style={colorScheme === "dark" ? "light" : "auto"} />
         <ThemedText>
           {language === "ar" ? "جاري تحميل النتائج..." : "Loading results..."}
         </ThemedText>
@@ -81,17 +81,33 @@ export default function QuizResultScreen() {
 
   // Determine result color based on type with our purple scheme
   const getResultColor = (type: string) => {
-    switch (type) {
-      case "a":
-        return colors.pink; // التيه - Pink
-      case "b":
-        return colors.primaryLight; // الإدراك - Light Purple
-      case "c":
-        return colors.indigo; // النمو - Indigo
-      case "d":
-        return colors.primary; // الاتساق - Purple
-      default:
-        return colors.primary;
+    // Use appropriate colors for both themes
+    if (colorScheme === "dark") {
+      switch (type) {
+        case "a": // التيه - Pink
+          return colors.pink;
+        case "b": // الإدراك - Light Purple
+          return colors.primary;
+        case "c": // النمو - Indigo
+          return colors.indigo;
+        case "d": // الاتساق - Purple
+          return colors.primaryDark;
+        default:
+          return colors.primary;
+      }
+    } else {
+      switch (type) {
+        case "a": // التيه - Pink
+          return colors.pink;
+        case "b": // الإدراك - Light Purple
+          return colors.primaryLight;
+        case "c": // النمو - Indigo
+          return colors.indigo;
+        case "d": // الاتساق - Purple
+          return colors.primary;
+        default:
+          return colors.primary;
+      }
     }
   };
 
@@ -134,14 +150,22 @@ export default function QuizResultScreen() {
     router.push("/ai-assistant");
   };
 
+  // Get gradient colors based on the theme
+  const getGradientColors = () => {
+    if (colorScheme === "dark") {
+      // For dark mode, make gradient more subtle and darker
+      return [resultColor, resultColor + "80"]; // 50% opacity for second color
+    } else {
+      // Original gradient for light mode
+      return [resultColor, resultColor + "99"];
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
       <StatusBar style="light" />
 
-      <LinearGradient
-        colors={[resultColor, resultColor + "99"]}
-        style={styles.header}
-      >
+      <LinearGradient colors={getGradientColors()} style={styles.header}>
         <View style={styles.resultTitleContainer}>
           <ThemedText style={[styles.resultTitle, isRtl && styles.rtlText]}>
             {title}
@@ -176,7 +200,17 @@ export default function QuizResultScreen() {
           {advice}
         </ThemedText>
 
-        <View style={styles.divider} />
+        <View
+          style={[
+            styles.divider,
+            {
+              backgroundColor:
+                colorScheme === "dark"
+                  ? "rgba(255, 255, 255, 0.15)"
+                  : "#e0e0e0",
+            },
+          ]}
+        />
 
         <ThemedText style={[styles.resourcesTitle, isRtl && styles.rtlText]}>
           {language === "ar"
@@ -185,7 +219,15 @@ export default function QuizResultScreen() {
         </ThemedText>
 
         <TouchableOpacity
-          style={styles.resourceButton}
+          style={[
+            styles.resourceButton,
+            {
+              backgroundColor:
+                colorScheme === "dark"
+                  ? colors.darkElevated || "#2C2C2C"
+                  : "#f5f5f5",
+            },
+          ]}
           onPress={() => router.push("/(tabs)/resources")}
         >
           <View style={styles.resourceButtonContent}>
@@ -204,7 +246,15 @@ export default function QuizResultScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.resourceButton}
+          style={[
+            styles.resourceButton,
+            {
+              backgroundColor:
+                colorScheme === "dark"
+                  ? colors.darkElevated || "#2C2C2C"
+                  : "#f5f5f5",
+            },
+          ]}
           onPress={() => router.push("/(tabs)/workshops")}
         >
           <View style={styles.resourceButtonContent}>
@@ -231,7 +281,16 @@ export default function QuizResultScreen() {
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
-          style={[styles.shareButton, { borderColor: colors.primary }]}
+          style={[
+            styles.shareButton,
+            {
+              borderColor: colors.primary,
+              backgroundColor:
+                colorScheme === "dark"
+                  ? "rgba(198, 125, 255, 0.15)"
+                  : "#ffffff",
+            },
+          ]}
           onPress={shareResult}
         >
           <Ionicons
@@ -260,7 +319,10 @@ export default function QuizResultScreen() {
       <TouchableOpacity
         style={[
           styles.aiAssistantButton,
-          { backgroundColor: colors.primaryDark },
+          {
+            backgroundColor:
+              colorScheme === "dark" ? "#332A40" : colors.primaryDark,
+          },
         ]}
         onPress={handleTalkToAi}
       >

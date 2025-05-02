@@ -108,9 +108,27 @@ export default function QuizScreen() {
   const questionText =
     language === "ar" ? currentQuestion.text : currentQuestion.textEn;
 
+  // Get option background and border colors based on theme
+  const getOptionStyles = (isSelected: boolean) => {
+    if (isSelected) {
+      return {
+        backgroundColor: colors.primary,
+        borderColor: colors.primary,
+      };
+    } else {
+      return {
+        backgroundColor:
+          colorScheme === "light"
+            ? "#f5f5f5"
+            : colors.darkElevated || "#2C2C2C",
+        borderColor: colorScheme === "light" ? "#e0e0e0" : colors.grayMedium,
+      };
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style={colorScheme === "light" ? "auto" : "light"} />
 
       {/* Back button in top left corner */}
       <TouchableOpacity
@@ -130,7 +148,15 @@ export default function QuizScreen() {
       </TouchableOpacity>
 
       {/* Progress bar */}
-      <View style={styles.progressContainer}>
+      <View
+        style={[
+          styles.progressContainer,
+          {
+            backgroundColor:
+              colorScheme === "light" ? "#e0e0e0" : "rgba(255,255,255,0.15)",
+          },
+        ]}
+      >
         <Animated.View
           style={[
             styles.progressBar,
@@ -163,33 +189,35 @@ export default function QuizScreen() {
         </ThemedText>
 
         <View style={styles.optionsContainer}>
-          {currentQuestion.options.map((option) => (
-            <TouchableOpacity
-              key={option.id}
-              style={[
-                styles.option,
-                answers[currentQuestionIndex] === option.id && [
-                  styles.selectedOption,
-                  {
-                    backgroundColor: colors.primary,
-                    borderColor: colors.primary,
-                  },
-                ],
-              ]}
-              onPress={() => handleOptionSelect(option.id)}
-            >
-              <ThemedText
-                style={[
-                  styles.optionText,
-                  isRtl && styles.rtlText,
-                  answers[currentQuestionIndex] === option.id &&
-                    styles.selectedOptionText,
-                ]}
+          {currentQuestion.options.map((option) => {
+            const isSelected = answers[currentQuestionIndex] === option.id;
+            const optionStyles = getOptionStyles(isSelected);
+
+            return (
+              <TouchableOpacity
+                key={option.id}
+                style={[styles.option, optionStyles]}
+                onPress={() => handleOptionSelect(option.id)}
               >
-                {language === "ar" ? option.text : option.textEn}
-              </ThemedText>
-            </TouchableOpacity>
-          ))}
+                <ThemedText
+                  style={[
+                    styles.optionText,
+                    isRtl && styles.rtlText,
+                    isSelected && styles.selectedOptionText,
+                    {
+                      color: isSelected
+                        ? "#ffffff"
+                        : colorScheme === "light"
+                        ? "#333333"
+                        : colors.text,
+                    },
+                  ]}
+                >
+                  {language === "ar" ? option.text : option.textEn}
+                </ThemedText>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
 
@@ -199,7 +227,15 @@ export default function QuizScreen() {
             styles.button,
             styles.backButton,
             { borderColor: colors.primary },
-            isFirstQuestion && styles.disabledButton,
+            isFirstQuestion && [
+              styles.disabledButton,
+              {
+                backgroundColor:
+                  colorScheme === "light"
+                    ? "#cccccc"
+                    : "rgba(120, 120, 120, 0.3)",
+              },
+            ],
           ]}
           onPress={goToPreviousQuestion}
           disabled={isFirstQuestion}
@@ -207,8 +243,13 @@ export default function QuizScreen() {
           <ThemedText
             style={[
               styles.backButtonText,
-              { color: colors.primary },
-              isFirstQuestion && styles.disabledButtonText,
+              {
+                color: isFirstQuestion
+                  ? colorScheme === "light"
+                    ? "#666666"
+                    : "#999999"
+                  : colors.primary,
+              },
             ]}
           >
             {language === "ar" ? "السابق" : "Previous"}
@@ -220,7 +261,15 @@ export default function QuizScreen() {
             styles.button,
             styles.nextButton,
             { backgroundColor: colors.primary },
-            !answers[currentQuestionIndex] && styles.disabledButton,
+            !answers[currentQuestionIndex] && [
+              styles.disabledButton,
+              {
+                backgroundColor:
+                  colorScheme === "light"
+                    ? "#cccccc"
+                    : "rgba(120, 120, 120, 0.3)",
+              },
+            ],
           ]}
           onPress={goToNextQuestion}
           disabled={!answers[currentQuestionIndex]}

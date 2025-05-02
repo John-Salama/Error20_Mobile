@@ -1,6 +1,6 @@
 import { router, Tabs, useSegments } from "expo-router";
 import React, { useEffect } from "react";
-import { BackHandler, Platform } from "react-native";
+import { BackHandler, Platform, StyleSheet } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -13,6 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { translations } = useAppContext();
+  const colors = Colors[colorScheme ?? "light"];
 
   // Use useSegments to track navigation - this is more stable than accessing navigation state directly
   const segments = useSegments();
@@ -43,7 +44,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: colors.tint,
+        tabBarInactiveTintColor: colorScheme === 'dark' ? colors.grayMedium : undefined,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -51,9 +53,18 @@ export default function TabLayout() {
           ios: {
             // Use a transparent background on iOS to show the blur effect
             position: "absolute",
+            // Enhanced shadow for dark mode
+            ...styles.tabBar,
+            shadowColor: colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.5)' : undefined,
           },
-          default: {},
+          default: {
+            backgroundColor: colorScheme === 'dark' ? colors.darkElevated || '#2C2C2C' : undefined,
+            borderTopColor: colorScheme === 'dark' ? 'rgba(255,255,255,0.1)' : undefined,
+          },
         }),
+        tabBarLabelStyle: {
+          fontWeight: '500',
+        }
       }}
     >
       <Tabs.Screen
@@ -96,3 +107,12 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    elevation: 10,
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+  },
+});
