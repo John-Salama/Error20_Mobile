@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -61,6 +62,7 @@ export default function AIAssistantScreen() {
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(true); // To track online status
+  const [keyboardShown, setKeyboardShown] = useState(false); // Track keyboard visibility
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -74,6 +76,28 @@ export default function AIAssistantScreen() {
     };
     setMessages([greetingMessage]);
   }, [language]);
+
+  // Add keyboard show/hide listeners
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+      () => {
+        setKeyboardShown(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
+      () => {
+        setKeyboardShown(false);
+      }
+    );
+
+    // Clean up listeners when component unmounts
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -224,140 +248,148 @@ export default function AIAssistantScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <StatusBar style="light" />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      enabled={keyboardShown} // Only enable when keyboard is shown
+    >
+      <ThemedView style={styles.container}>
+        <StatusBar style="light" />
 
-      {/* Header */}
-      <View
-        style={[
-          styles.header,
-          {
-            backgroundColor:
-              colorScheme === "dark" ? "#332A40" : colors.primaryDark,
-          },
-        ]}
-      >
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-
-        <ThemedText style={styles.headerTitle}>
-          {language === "ar" ? "المساعد الذكي" : "AI Assistant"}
-        </ThemedText>
-
+        {/* Header */}
         <View
-          style={[styles.onlineIndicator, !isOnline && styles.offlineIndicator]}
-        />
-      </View>
-
-      {/* Messages */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.messagesContainer}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* Typing indicator */}
-      {isTyping && (
-        <View
-          style={[styles.typingContainer, isRtl && styles.typingContainerRtl]}
-        >
-          <View
-            style={[
-              styles.typingBubble,
-              {
-                backgroundColor:
-                  colorScheme === "dark"
-                    ? colors.darkElevated || "#2C2C2C"
-                    : "#f1f1f1",
-              },
-            ]}
-          >
-            <ActivityIndicator size="small" color={colors.primary} />
-            <ThemedText
-              style={[
-                styles.typingText,
-                { color: colorScheme === "dark" ? "#B0B0B0" : "#666" },
-              ]}
-            >
-              {language === "ar" ? "يكتب..." : "Typing..."}
-            </ThemedText>
-          </View>
-        </View>
-      )}
-
-      {/* Input area */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-        style={[
-          styles.inputContainer,
-          {
-            borderTopColor:
-              colorScheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "#eee",
-          },
-        ]}
-      >
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={[
-              styles.input,
-              isRtl && styles.rtlText,
-              {
-                backgroundColor:
-                  colorScheme === "dark"
-                    ? colors.darkElevated || "#2C2C2C"
-                    : "#f5f5f5",
-                color: colorScheme === "dark" ? colors.text : "#333",
-              },
-            ]}
-            placeholder={
-              language === "ar"
-                ? "اكتب رسالتك هنا..."
-                : "Type your message here..."
-            }
-            placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
-            value={inputText}
-            onChangeText={setInputText}
-            multiline
-            maxLength={200}
-            textAlignVertical="top"
-          />
-
-          <TouchableOpacity
-            style={[
-              styles.sendButton,
-              { backgroundColor: colors.primary },
-              !inputText.trim() && [
-                styles.disabledSendButton,
-                { backgroundColor: colorScheme === "dark" ? "#444" : "#ccc" },
-              ],
-            ]}
-            onPress={sendMessage}
-            disabled={!inputText.trim() || isTyping}
-          >
-            <Ionicons name="send" size={20} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        <ThemedText
           style={[
-            styles.disclaimer,
-            { color: colorScheme === "dark" ? "#999" : "#999" },
+            styles.header,
+            {
+              backgroundColor:
+                colorScheme === "dark" ? "#332A40" : colors.primaryDark,
+            },
           ]}
         >
-          {language === "ar"
-            ? "هذا مساعد ذكي يقدم نصائح عامة. للحالات الطارئة، يرجى الاتصال بمختص."
-            : "This is an AI assistant providing general advice. For emergencies, please contact a professional."}
-        </ThemedText>
-      </KeyboardAvoidingView>
-    </ThemedView>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </TouchableOpacity>
+
+          <ThemedText style={styles.headerTitle}>
+            {language === "ar" ? "المساعد الذكي" : "AI Assistant"}
+          </ThemedText>
+
+          <View
+            style={[
+              styles.onlineIndicator,
+              !isOnline && styles.offlineIndicator,
+            ]}
+          />
+        </View>
+
+        {/* Messages */}
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.messagesContainer}
+          showsVerticalScrollIndicator={false}
+        />
+
+        {/* Typing indicator */}
+        {isTyping && (
+          <View
+            style={[styles.typingContainer, isRtl && styles.typingContainerRtl]}
+          >
+            <View
+              style={[
+                styles.typingBubble,
+                {
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.darkElevated || "#2C2C2C"
+                      : "#f1f1f1",
+                },
+              ]}
+            >
+              <ActivityIndicator size="small" color={colors.primary} />
+              <ThemedText
+                style={[
+                  styles.typingText,
+                  { color: colorScheme === "dark" ? "#B0B0B0" : "#666" },
+                ]}
+              >
+                {language === "ar" ? "يكتب..." : "Typing..."}
+              </ThemedText>
+            </View>
+          </View>
+        )}
+
+        {/* Input area */}
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              borderTopColor:
+                colorScheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "#eee",
+            },
+          ]}
+        >
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[
+                styles.input,
+                isRtl && styles.rtlText,
+                {
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.darkElevated || "#2C2C2C"
+                      : "#f5f5f5",
+                  color: colorScheme === "dark" ? colors.text : "#333",
+                },
+              ]}
+              placeholder={
+                language === "ar"
+                  ? "اكتب رسالتك هنا..."
+                  : "Type your message here..."
+              }
+              placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
+              value={inputText}
+              onChangeText={setInputText}
+              multiline
+              maxLength={200}
+              textAlignVertical="top"
+            />
+
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                { backgroundColor: colors.primary },
+                !inputText.trim() && [
+                  styles.disabledSendButton,
+                  { backgroundColor: colorScheme === "dark" ? "#444" : "#ccc" },
+                ],
+              ]}
+              onPress={sendMessage}
+              disabled={!inputText.trim() || isTyping}
+            >
+              <Ionicons name="send" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          <ThemedText
+            style={[
+              styles.disclaimer,
+              { color: colorScheme === "dark" ? "#999" : "#999" },
+            ]}
+          >
+            {language === "ar"
+              ? "هذا مساعد ذكي يقدم نصائح عامة. للحالات الطارئة، يرجى الاتصال بمختص."
+              : "This is an AI assistant providing general advice. For emergencies, please contact a professional."}
+          </ThemedText>
+        </View>
+      </ThemedView>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({

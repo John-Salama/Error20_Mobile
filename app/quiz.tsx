@@ -102,7 +102,7 @@ export default function QuizScreen() {
 
   const goToWelcomeScreen = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push("/welcome");
+    router.push("/(tabs)");
   };
 
   const questionText =
