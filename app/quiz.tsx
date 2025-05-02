@@ -52,7 +52,7 @@ export default function QuizScreen() {
           return true; // Prevent default behavior (exiting the app)
         } else {
           // If we're on the first question, go to welcome screen
-          router.push("/welcome");
+          router.push("/");
           return true; // Prevent default behavior
         }
       }
