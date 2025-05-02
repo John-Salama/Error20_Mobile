@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import {
+  BackHandler,
   ScrollView,
   Share,
   StyleSheet,
@@ -25,6 +26,20 @@ export default function QuizResultScreen() {
   const isRtl = language === "ar";
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+
+  // Handle hardware back button
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        // Navigate back to quiz screen when hardware back button is pressed
+        router.push("/");
+        return true; // Prevent default behavior (exiting the app)
+      }
+    );
+
+    return () => backHandler.remove(); // Clean up the event listener
+  }, []);
 
   // Calculate results if this is a fresh submission
   useEffect(() => {

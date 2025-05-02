@@ -1,6 +1,6 @@
-import { Tabs } from "expo-router";
-import React from "react";
-import { Platform } from "react-native";
+import { router, Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { BackHandler, Platform } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -13,6 +13,20 @@ import { Ionicons } from "@expo/vector-icons";
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { language, translations } = useAppContext();
+
+  // Handle hardware back button for tabs
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        // Prevent accidental app closure when pressing back button in tabs
+        router.back(); // Navigate back in the router stack
+        return true; // Returning true prevents the default behavior
+      }
+    );
+
+    return () => backHandler.remove(); // Clean up the event listener
+  }, []);
 
   return (
     <Tabs
