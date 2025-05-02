@@ -48,7 +48,7 @@ export default function HomeScreen() {
 
   // Choose gradient colors based on theme
   const headerGradient = isDark
-    ? [colors.primaryDark, "#2A1F37"]
+    ? [colors.primaryDark, "#7739bd"]
     : [colors.primaryLight, colors.primary];
 
   return (
