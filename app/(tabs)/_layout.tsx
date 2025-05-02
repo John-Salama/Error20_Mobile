@@ -1,4 +1,4 @@
-import { router, Tabs } from "expo-router";
+import { router, Tabs, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 import { BackHandler, Platform } from "react-native";
 
@@ -14,19 +14,31 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { translations } = useAppContext();
 
+  // Use useSegments to track navigation - this is more stable than accessing navigation state directly
+  const segments = useSegments();
+
   // Handle hardware back button for tabs
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
-        // Prevent accidental app closure when pressing back button in tabs
-        router.back(); // Navigate back in the router stack
-        return true; // Returning true prevents the default behavior
+        if (router.canGoBack()) {
+          router.push("/");
+          return true;
+        } else if (segments[segments.length - 1] === "(tabs)") {
+          // We're at the tabs root, exit the app
+          BackHandler.exitApp();
+          return true;
+        } else {
+          // Navigate to welcome screen
+          router.push("/");
+          return true;
+        }
       }
     );
 
     return () => backHandler.remove(); // Clean up the event listener
-  }, []);
+  }, [segments]);
 
   return (
     <Tabs
