@@ -42,7 +42,7 @@ export default function QuizResultScreen() {
 
     // If we don't have answers and this is not a fresh submission, redirect to quiz
     if (!hasAnswers && freshSubmission !== "true") {
-      router.replace("/quiz");
+      router.push("/quiz");
     }
   }, [quizAnswers]);
 
@@ -103,7 +103,7 @@ export default function QuizResultScreen() {
   const handleRestartQuiz = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     resetQuiz();
-    router.replace("/quiz");
+    router.push("/quiz");
   };
 
   // Navigate to home page while preserving the quiz result

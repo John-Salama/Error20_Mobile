@@ -70,14 +70,14 @@ export default function QuizScreen() {
 
   // This function will handle the final submission of the quiz
   const handleQuizSubmission = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // Store the answers in context
     setQuizAnswers(answers);
 
     // Instead of trying to navigate immediately after state updates,
     // we'll navigate first, and let the result page handle the calculation
-    router.replace({
+    router.push({
       pathname: "/quiz-result",
       // Pass a parameter to indicate this is a fresh submission
       params: { freshSubmission: "true" },

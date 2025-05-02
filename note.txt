@@ -1,8 +1,9 @@
 when the phone is on dark theme the application color is not good fix it
 real ai
-add splash screen
 change app icon
 extract apk
+
 change lang not effect in pages its effect in welcome page only i want it to effect in the whole app - done
 redesign workshops page - done 
 video tab - done
+add splash screen - done
