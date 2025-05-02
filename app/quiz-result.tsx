@@ -33,7 +33,7 @@ export default function QuizResultScreen() {
       "hardwareBackPress",
       () => {
         // Navigate back to quiz screen when hardware back button is pressed
-        router.push("/");
+        router.push("/(tabs)");
         return true; // Prevent default behavior (exiting the app)
       }
     );

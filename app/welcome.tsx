@@ -151,7 +151,7 @@ export default function WelcomeScreen() {
               styles.resourcesButton,
               colorScheme === "dark" ? { borderColor: colors.primary } : {},
             ]}
-            onPress={() => router.push("/")}
+            onPress={() => router.push("/(tabs)")}
           >
             <ThemedText
               style={styles.buttonTextAlt}

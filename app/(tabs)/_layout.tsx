@@ -24,7 +24,7 @@ export default function TabLayout() {
       "hardwareBackPress",
       () => {
         if (router.canGoBack()) {
-          router.push("/");
+          router.push("/(tabs)");
           return true;
         } else if (segments[segments.length - 1] === "(tabs)") {
           // We're at the tabs root, exit the app
@@ -32,7 +32,7 @@ export default function TabLayout() {
           return true;
         } else {
           // Navigate to welcome screen
-          router.push("/");
+          router.push("/(tabs)");
           return true;
         }
       }
