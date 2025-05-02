@@ -2,8 +2,15 @@ import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from "react-native-reanimated";
 
 import { translations } from "../assets/translations";
 import { ThemedText } from "../components/ThemedText";
@@ -17,6 +24,54 @@ export default function WelcomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const tintColor = useThemeColor({}, "primary");
+
+  // Animation values
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.8);
+  const contentOpacity = useSharedValue(0);
+  const contentTranslateY = useSharedValue(50);
+
+  useEffect(() => {
+    // Start animations when component mounts
+    const animationDuration = 800;
+
+    // Logo animation
+    logoOpacity.value = withTiming(1, {
+      duration: animationDuration,
+      easing: Easing.out(Easing.ease),
+    });
+
+    logoScale.value = withTiming(1, {
+      duration: animationDuration,
+      easing: Easing.elastic(1.2),
+    });
+
+    // Content animation with delay
+    contentOpacity.value = withDelay(
+      200,
+      withTiming(1, { duration: animationDuration })
+    );
+
+    contentTranslateY.value = withDelay(
+      200,
+      withTiming(0, { duration: animationDuration })
+    );
+  }, []);
+
+  // Animated styles
+  const logoAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: logoOpacity.value,
+      transform: [{ scale: logoScale.value }],
+    };
+  });
+
+  const contentAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: contentOpacity.value,
+      transform: [{ translateY: contentTranslateY.value }],
+    };
+  });
 
   const startQuiz = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -37,15 +92,15 @@ export default function WelcomeScreen() {
     >
       <StatusBar style="light" />
       <View style={styles.container}>
-        <View style={styles.logoContainer}>
+        <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
           <Image
             source={require("../assets/images/logo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
-        </View>
+        </Animated.View>
 
-        <View style={styles.contentContainer}>
+        <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
           <ThemedText
             style={[styles.title, language === "ar" ? styles.rtlText : {}]}
           >
@@ -75,7 +130,7 @@ export default function WelcomeScreen() {
               {language === "ar" ? "الصفحة الرئيسية" : "Return Home"}
             </ThemedText>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
 
         <TouchableOpacity
           style={styles.languageToggle}
