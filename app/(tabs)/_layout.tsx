@@ -56,14 +56,14 @@ export default function TabLayout() {
             position: "absolute",
             // Enhanced shadow for dark mode
             ...styles.tabBar,
+            backgroundColor:
+              colorScheme === "dark" ? colors.background : "white",
             shadowColor:
               colorScheme === "dark" ? "rgba(0, 0, 0, 0.5)" : undefined,
           },
           default: {
             backgroundColor:
-              colorScheme === "dark"
-                ? colors.darkElevated || "#2C2C2C"
-                : undefined,
+              colorScheme === "dark" ? colors.background : "white",
             borderTopColor:
               colorScheme === "dark" ? "rgba(255,255,255,0.1)" : undefined,
           },
