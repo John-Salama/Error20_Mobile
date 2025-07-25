@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Replace with your actual API key when you get it
 // For security, consider using environment variables or a secure storage method
-const API_KEY = "AIzaSyDT-Rh_bD3IVvbJi_NwyU3KXHc8FEU8xKI";
+const API_KEY = "";
 
 // Create a client instance with the correct API version
 const genAI = new GoogleGenerativeAI(API_KEY, { apiVersion: "v1" });
